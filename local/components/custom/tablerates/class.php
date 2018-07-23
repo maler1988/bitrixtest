@@ -1,6 +1,8 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
+use Bitrix\Main\Loader;
 use Bitrix\Highloadblock as HL;
+
 
 class CurrencyRates extends CBitrixComponent {
 	
@@ -22,16 +24,22 @@ class CurrencyRates extends CBitrixComponent {
 	 * */
 	public function getResult(){
 		
+		if(!Loader::includeModule('highloadblock'))
+			return false;
+		
+		
 		$defaultFilter = array();
 		
 		if(!empty($_GET['date_start'])){
-			$defaultFilter['>=UF_DATE'] = \Bitrix\Main\Type\DateTime::createFromUserTime($defaultFilter);
+			$dateStart = date('d.m.Y',strtotime($_GET['date_start']));
+			$defaultFilter['>=UF_DATE'] = \Bitrix\Main\Type\DateTime::createFromUserTime($dateStart);
 		}
 		
 		if(!empty($_GET['date_end'])){
-			$defaultFilter['<=UF_DATE'] = \Bitrix\Main\Type\DateTime::createFromUserTime($defaultFilter);
+			$dateEnd = date('d.m.Y',strtotime($_GET['date_end']));
+			$defaultFilter['<=UF_DATE'] = \Bitrix\Main\Type\DateTime::createFromUserTime($dateEnd);
 		}
-		
+
 		$hlblock = HL\HighloadBlockTable::getById(HL_BLOCK_RATES_ID)->fetch();
 		$entity = HL\HighloadBlockTable::compileEntity($hlblock);
 		$entityClass = $entity->getDataClass();
@@ -71,7 +79,18 @@ class CurrencyRates extends CBitrixComponent {
 		try {
 			
 			//Кешируем данные
-			if($this->StartResultCache($this->arParams["CACHE_TIME"])) {
+			$cahce = array();
+			if(!empty($_GET['date_start'])){
+				$cahce['date_start'] = strtotime($_GET['date_start']);
+			}
+			
+			if(!empty($_GET['date_end'])){
+				$cahce['date_start'] = strtotime($_GET['date_start']);
+			}
+			
+			$cahceId = serialize($cahce);
+			
+			if($this->StartResultCache($this->arParams["CACHE_TIME"], $cahceId)) {
 				$this->getResult();
 				$this->includeComponentTemplate();
 			}
