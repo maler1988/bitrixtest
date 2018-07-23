@@ -1,0 +1,7 @@
+.table-responsive table th {
+	min-width: 100px;
+}
+
+.table-responsive tr:hover {
+	background-color: #F1F1F1!important;
+}
