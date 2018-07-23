@@ -1,0 +1,12 @@
+bitrix/cache
+bitrix/managed_cache
+bitrix/stack_cache
+bitrix/backup
+bitrix/tmp
+*.tar.gz
+*.tar.gz.1
+*.tar.gz.2
+*.tar.gz.3
+*.tar.gz.4
+sitemap*
+*.log
